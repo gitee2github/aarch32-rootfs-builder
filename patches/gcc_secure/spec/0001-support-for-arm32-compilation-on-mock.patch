@@ -1,0 +1,81 @@
+From 9438fcc55c18c3388b7fc7911bb580aac0174112 Mon Sep 17 00:00:00 2001
+From: root <root@localhost.localdomain>
+Date: Tue, 17 Nov 2020 21:40:00 -0500
+Subject: [PATCH] support for arm32 compilation on mock
+
+---
+ gcc_secure.spec | 23 ++++++++++++++++-------
+ 1 file changed, 16 insertions(+), 7 deletions(-)
+
+diff --git a/gcc_secure.spec b/gcc_secure.spec
+index a623aa4..4dc69da 100644
+--- a/gcc_secure.spec
++++ b/gcc_secure.spec
+@@ -1,3 +1,9 @@
++%if 0%{?mock_build}
++%global install_dir /var/tmp
++%else
++%global install_dir /tmp
++%endif
++
+ Name:           gcc_secure
+ Summary:        Build with gcov
+ License:        GPL
+@@ -29,11 +35,11 @@ mkdir -p %{buildroot}/opt/needgcov
+ %pre
+ 
+ %post
+-echo -e '*cc1_options:\n+ %{!D__KERNEL__:%{!nostdlib:%{!nodefaultlibs:%{!fno-stack-protector:%{!fstack-protector-all:-fstack-protector-strong}}}}}' >/tmp/gcc-specs-fs-cc1
++echo -e '*cc1_options:\n+ %{!D__KERNEL__:%{!nostdlib:%{!nodefaultlibs:%{!fno-stack-protector:%{!fstack-protector-all:-fstack-protector-strong}}}}}' >%{install_dir}/gcc-specs-fs-cc1
+ 
+-echo -e '*cc1_options:\n+ %{!r:%{!D__KERNEL__:%{!pie:%{!fpic:%{!fPIC:%{!fpie:%{!fPIE:%{!fno-pic:%{!fno-PIC:%{!fno-pie:%{!fno-PIE:%{!shared:%{!static:%{!nostdlib:%{!nostartfiles:-fPIE}}}}}}}}}}}}}}}' >/tmp/gcc-specs-pie-cc1
++echo -e '*cc1_options:\n+ %{!r:%{!D__KERNEL__:%{!pie:%{!fpic:%{!fPIC:%{!fpie:%{!fPIE:%{!fno-pic:%{!fno-PIC:%{!fno-pie:%{!fno-PIE:%{!shared:%{!static:%{!nostdlib:%{!nostartfiles:-fPIE}}}}}}}}}}}}}}}' >%{install_dir}/gcc-specs-pie-cc1
+ 
+-echo -e '*self_spec:\n+ %{!D__KERNEL__:%{!pie:%{!A:%{!fno-pie:%{!fno-PIE:%{!fno-pic:%{!fno-PIC:%{!shared:%{!static:%{!r:%{!nostdlib:%{!nostartfiles:-pie}}}}}}}}}}}}' >/tmp/gcc-specs-pie-ld
++echo -e '*self_spec:\n+ %{!D__KERNEL__:%{!pie:%{!A:%{!fno-pie:%{!fno-PIE:%{!fno-pic:%{!fno-PIC:%{!shared:%{!static:%{!r:%{!nostdlib:%{!nostartfiles:-pie}}}}}}}}}}}}' >%{install_dir}/gcc-specs-pie-ld
+ 
+ old_gcc=/usr/bin/gcc
+ mv $old_gcc $old_gcc"_old"
+@@ -68,9 +74,9 @@ if ! cat /.build.command | egrep "\$gcc_secure_exclude" &>/dev/null; then
+ 
+     if [[ x\$rpm_name = "xglibc" ]] || [[ x\$rpm_name = "xcompat-glibc" ]];then
+         #glibc supply fs define, can not add fs for glibc self
+-        /usr/bin/gcc_old \$sec_opt "\$@" \$fs_opt --specs=/tmp/gcc-specs-pie-cc1 --specs=/tmp/gcc-specs-pie-ld
++        /usr/bin/gcc_old \$sec_opt "\$@" \$fs_opt --specs=%{install_dir}/gcc-specs-pie-cc1 --specs=%{install_dir}/gcc-specs-pie-ld
+     else
+-        /usr/bin/gcc_old \$sec_opt "\$@" \$fs_opt --specs=/tmp/gcc-specs-pie-cc1 --specs=/tmp/gcc-specs-pie-ld --specs=/tmp/gcc-specs-fs-cc1
++        /usr/bin/gcc_old \$sec_opt "\$@" \$fs_opt --specs=%{install_dir}/gcc-specs-pie-cc1 --specs=%{install_dir}/gcc-specs-pie-ld --specs=%{install_dir}/gcc-specs-fs-cc1
+     fi
+ 
+ else
+@@ -110,7 +116,7 @@ if ! cat /.build.command | egrep "\$gcc_secure_exclude" &>/dev/null; then
+         #libtool use g++ -v for test compile env,if add Wl opt, it will make g++ -v fail
+         $old_gplus"_old" "\$@"
+     else
+-        /usr/bin/g++_old \$sec_opt "\$@" \$fs_opt  --specs=/tmp/gcc-specs-pie-cc1 --specs=/tmp/gcc-specs-pie-ld --specs=/tmp/gcc-specs-fs-cc1
++        /usr/bin/g++_old \$sec_opt "\$@" \$fs_opt  --specs=%{install_dir}/gcc-specs-pie-cc1 --specs=%{install_dir}/gcc-specs-pie-ld --specs=%{install_dir}/gcc-specs-fs-cc1
+     fi
+ else
+     $old_gplus"_old" "\$@"
+@@ -146,7 +152,7 @@ if ! cat /.build.command | egrep "\$gcc_secure_exclude" &>/dev/null; then
+         fs_opt=\`cat \$configfile| grep fs_opt| awk -F: '{print \$NF}'\`
+     fi
+ 
+-    /usr/bin/c++_old \$sec_opt "\$@" \$fs_opt  --specs=/tmp/gcc-specs-pie-cc1 --specs=/tmp/gcc-specs-pie-ld --specs=/tmp/gcc-specs-fs-cc1
++    /usr/bin/c++_old \$sec_opt "\$@" \$fs_opt  --specs=%{install_dir}/gcc-specs-pie-cc1 --specs=%{install_dir}/gcc-specs-pie-ld --specs=%{install_dir}/gcc-specs-fs-cc1
+ 
+ else
+     $old_cpp"_old" "\$@"
+@@ -172,6 +178,9 @@ rm -rf %{_tmppath}/%{name}-%{version}
+ rm -rf $RPM_BUILD_DIR/%{name}-%{version}
+ 
+ %changelog
++* Thu Nov 17 2020 js_liangdong<liang_dong@hoperun.com> - 1.0-0.7
++- support for arm32 compilation on mock
++
+ * Tue Feb 18 2020 yanzhihua<yanzhihua4@huawei.com> - 1.0-0.6
+ - Type:enhancement
+ - ID:NA
+-- 
+2.20.1
+
