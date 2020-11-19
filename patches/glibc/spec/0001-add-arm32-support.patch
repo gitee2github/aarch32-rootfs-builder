@@ -1,0 +1,64 @@
+From 885b4c81557986011fa025a22d9aef7b3e742835 Mon Sep 17 00:00:00 2001
+From: root <root@localhost.localdomain>
+Date: Tue, 17 Nov 2020 21:11:23 -0500
+Subject: [PATCH] add arm32 support
+
+---
+ glibc.spec | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/glibc.spec b/glibc.spec
+index 1dc2725..c9775c3 100644
+--- a/glibc.spec
++++ b/glibc.spec
+@@ -59,7 +59,7 @@
+ ##############################################################################
+ Name: 	 	glibc
+ Version: 	2.28
+-Release: 	36
++Release: 	37
+ Summary: 	The GNU libc libraries
+ License:	%{all_license}
+ URL: 		http://www.gnu.org/software/glibc/
+@@ -528,7 +528,7 @@ pushd build-%{target}
+     -I. -DDATADIR=\"%{_datadir}\" -DPREFIX=\"%{_prefix}\" \
+     -L../build-%{target} \
+     -B../build-%{target}/csu/ -lc -lc_nonshared \
+-    -Wl,-dynamic-linker=/lib64/ld-%{version}.so \
++    -Wl,-dynamic-linker=/%{_lib}/ld-%{version}.so \
+     -Wl,-rpath-link=.:./math:./elf:./dlfcn:./nss:./rt:./resolv:./mathvec:./support:./nptl libc.so.6 libc_nonshared.a \
+     -Wl,--as-needed $olddir/build-%{target}/elf/ld.so
+ install -m 700 build-locale-archive $RPM_BUILD_ROOT%{_prefix}/sbin/build-locale-archive
+@@ -735,8 +735,8 @@ fi
+ %verify(not md5 size mtime) %config(noreplace) /etc/nsswitch.conf
+ %verify(not md5 size mtime) %config(noreplace) /etc/ld.so.conf
+ %verify(not md5 size mtime) %config(noreplace) /etc/rpc
+-%verify(not md5 size mtime) %config(noreplace) /usr/lib64/gconv/gconv-modules
+-%verify(not md5 size mtime) /usr/lib64/gconv/gconv-modules.cache
++%verify(not md5 size mtime) %config(noreplace) %{_libdir}/gconv/gconv-modules
++%verify(not md5 size mtime) %{_libdir}/gconv/gconv-modules.cache
+ %dir /etc/ld.so.conf.d
+ %dir %{_prefix}/libexec/getconf
+ %{_prefix}/libexec/getconf/*
+@@ -902,7 +902,7 @@ fi
+ %{_prefix}/bin/pcprofiledump
+ %{_prefix}/bin/xtrace
+ %{_prefix}/lib/debug/usr/bin/*.debug
+-%{_prefix}/lib/debug/usr/lib64/*.a
++%{_prefix}/lib/debug%{_libdir}/*.a
+ 
+ 
+ %files help
+@@ -918,6 +918,9 @@ fi
+ 
+ 
+ %changelog
++* Thu Nov 17 2020 js_liangdong<liang_dong@hoperun.com> - 2.28-37
++- add arm32 compilation support
++
+ * Thu Mar 19 2020 yuxiangyang<yuxiangyang4@huawei.com> - 2.28-36
+ - fix build src.rpm error
+ 
+-- 
+2.20.1
+
