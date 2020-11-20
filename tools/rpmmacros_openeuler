@@ -1,0 +1,104 @@
+%openeuler 1
+%openEuler 1
+%rhel_version 800
+%el8 8
+%el7 8
+%rhel 8
+%fedora 0
+%centos 8
+#%fedora_version 0
+#%fedora 0
+%opensuse_bs 1
+%openblas_arches  aarch64  x86_64
+#%undefine _annotated_build
+
+%_vendor openEuler
+%_isa %{?__isa:(%{__isa})}%{!?__isa:%{nil}}
+%vendor http://openeuler.org
+%distribution Huawei openEuler
+%packager http://openeuler.org
+
+#for sign
+%_signature gpg
+%_gpg_path /home/abuild/.gnupg
+%_gpg_name private OBS
+%__gpg_sign_cmd         %{__gpg} \
+    gpg --no-verbose --no-armor \
+    %{?_gpg_digest_algo:--digest-algo %{_gpg_digest_algo}} \
+    --batch --pinentry-mode=loopback --passphrase="" \
+    --no-secmem-warning \
+    %{?_gpg_sign_cmd_extra_args:%{_gpg_sign_cmd_extra_args}} \
+    -u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
+
+#From RedHat buildsys-macros package
+
+%kernel_module_package_buildreqs kernel-devel redhat-rpm-config
+
+%with_python3 1
+%with_python2 1
+%python3_pkgversion 3
+#%__os_install_post %{nil}
+%python3_pkgversion 3
+%golang_arches %{ix86} x86_64 %{arm} aarch64 ppc64le s390x
+%efi_arch aa64
+%efi_vendor openEuler
+%efi aarch64 x86_64
+%unsignedaa64 shim-unsigned-aarch64
+%unsignedx64 shim-unsigned-x64
+%unsignedia32 shim-unsigned-ia32
+%shimveraa64 15
+%shimverx64 15
+%shimveria32 15
+%valgrind_arches %{ix86} x86_64 %{arm} aarch64 ppc64le s390x
+%mono_arches %{ix86} x86_64 %{arm} aarch64 ppc64le s390x
+%openblas_arches %{ix86} x86_64 %{arm} aarch64 ppc64le s390x
+%with_ocaml 1
+%dist .oe1
+
+%ext_info .gz
+%ext_man .gz
+#%_unpackaged_files_terminate_build 0
+
+%info_add(:-:) test -x /sbin/install-info -a -f %{?2}%{?!2:%{_infodir}}/%{1}%ext_info && /sbin/install-info --info-dir=%{?2}%{?!2:%{_infodir}} %{?2}%{?!2:%{_infodir}}/%{1}%ext_info \
+%{nil}
+
+%info_del(:-:) test -x /sbin/install-info -a ! -f %{?2}%{?!2:%{_infodir}}/%{1}%ext_info && /sbin/install-info --quiet --delete --info-dir=%{?2}%{?!2:%{_infodir}} %{?2}%{?!2:%{_infodir}}/%{1}%ext_info \
+%{nil}
+
+%gcc_secure_exclude "podman.spec|gcc.spec|arm-trusted-firmware.spec|docker-engine-openeuler.spec|arts.spec|runc-openeuler.spec|kata-containers.spec|dyninst.spec|ipxe.spec|tboot.spec|syslinux.spec|gcc-libraries.spec|kpatch.spec|gdb.spec|xorg-x11-server.spec|xorg-x11-drv-fbdev.spec|xorg-x11-drv-vesa.spec|xorg-x11-drv-ati.spec|xorg-x11-drv-dummy.spec|xorg-x11-drv-intel.spec|xorg-x11-drv-nouveau.spec|xorg-x11-drv-qxl.spec|xorg-x11-drv-v4l.spec|xorg-x11-drv-vmware.spec|xorg-x11-drv-evdev.spec|xorg-x11-drv-synaptics.spec|xorg-x11-drv-vmmouse.spec|xorg-x11-drv-void.spec|xorg-x11-drv-wacom.spec|hivex.spec|gimp.spec|memstomp.spec|supermin.spec|system-config-firewall.spec|isdn4k-utils.spec|emacs.spec|graphviz.spec|buildah.spec"
+
+%_build_id_links none
+
+#custom macros
+%openEuler 1
+%disable_rpath \
+sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool \
+sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+
+%delete_la_and_a \
+find $RPM_BUILD_ROOT -type f -name "*.la" -delete \
+find $RPM_BUILD_ROOT -type f -name "*.a" -delete
+
+%delete_la  find $RPM_BUILD_ROOT -type f -name "*.la" -delete 
+
+%chrpath_delete find $RPM_BUILD_ROOT/ -type f -exec file {} ';' | grep "\<ELF\>" | awk -F ':' '{print $1}' | xargs -i chrpath --delete {}
+
+%package_help        \
+%package        help \
+Summary:        Documents for %{name} \
+Buildarch:      noarch \
+Requires:		man info \
+\
+%description help \
+Man pages and other related documents for %{name}. 
+
+#%sbin_installinfo_rm bc.info
+#%sbin_installinfo_rm bc.info.gz
+
+%install_info() \
+/sbin/install-info %1 %{_infodir}/dir || :
+
+%install_info_rm() \
+/sbin/install-info --remove %1 %{_infodir}/dir || :
+
+%mock_build 1
