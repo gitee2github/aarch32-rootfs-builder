@@ -2,12 +2,12 @@ packages:
 - name: gcc_secure
   src:
     branch:openEuler-20.03-LTS
-    revision: 1.0-0.6
+    version: 1.0-0.6
 - name: glibc
   src:
     branch:openEuler-20.03-LTS
-    revision: 2.28-36
+    version: 2.28-36
 - name: libxcrypt
   src:
     branch:openEuler-20.03-LTS
-    revision: 4.4.8-4
+    version: 4.4.8-4
