@@ -1,0 +1,39 @@
+From f7a3cfe6b4ead49dce3d53a22da0fbbba32c4902 Mon Sep 17 00:00:00 2001
+From: js_liangdong <liang_dong@hoperun.com>
+Date: Thu, 10 Dec 2020 10:43:01 +0800
+Subject: [PATCH] Add 32-bit compilation support
+
+---
+ libxcrypt.spec | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/libxcrypt.spec b/libxcrypt.spec
+index 4b3323c..647201e 100644
+--- a/libxcrypt.spec
++++ b/libxcrypt.spec
+@@ -1,7 +1,11 @@
++%ifarch %{arm}
++%define  libdir /lib
++%else
+ %define  libdir /lib64
++%endif
+ Name:           libxcrypt
+ Version:        4.4.8
+-Release:        4
++Release:        5
+ Summary:        Extended crypt library for DES, MD5, Blowfish and others
+ License:        LGPLv2+ and BSD and Public Domain
+ URL:            https://github.com/besser82/%{name}
+@@ -96,6 +100,9 @@ make check
+ 
+ 
+ %changelog
++* Thu Dec 10 2020 js_liangdong <liang_dong@hoperun.com> - 4.4.8-5
++- Add 32-bit compilation support
++
+ * Mon Mar 9 2020 openEuler Buildteam <buildteam@openeuler.org> - 4.4.8-4
+ - add link files README.md and TODO.md
+ 
+-- 
+2.20.1
+
