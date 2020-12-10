@@ -23,7 +23,7 @@ build_pkg()
     local pkg_name=$1
     cat $config_file | grep -i '^- name:' | awk '{print $3}' | grep -w -i $pkg_name > /dev/null || exit $ERROR_NOT_FOUND_PKGS
 
-    local pkg_version=$(cat $config_file | grep  "^- name: $pkg_name"  -A3 | grep revision | awk '{print $2}')
+    local pkg_version=$(cat $config_file | grep  "^- name: $pkg_name"  -A3 | grep version | awk '{print $2}')
     local rpm_name=$pkg_name-$pkg_version$download_suffix
     mkdir -p ./$output_dir/$pkg_name
     pushd ./$output_dir/$pkg_name
