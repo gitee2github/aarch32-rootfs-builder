@@ -1,4 +1,8 @@
 packages:
+- name: audit
+  src:
+    branch:openEuler-20.03-LTS
+    version: 3.0-5
 - name: gcc_secure
   src:
     branch:openEuler-20.03-LTS
