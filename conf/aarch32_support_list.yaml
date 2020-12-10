@@ -7,3 +7,7 @@ packages:
   src:
     branch:openEuler-20.03-LTS
     revision: 2.28-36
+- name: libxcrypt
+  src:
+    branch:openEuler-20.03-LTS
+    revision: 4.4.8-4
