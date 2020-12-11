@@ -3,6 +3,10 @@ packages:
   src:
     branch:openEuler-20.03-LTS
     version: 3.0-5
+- name: ftp
+  src:
+    branch:openEuler-20.03-LTS
+    version: 0.17-79
 - name: gcc_secure
   src:
     branch:openEuler-20.03-LTS
