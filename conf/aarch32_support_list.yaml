@@ -31,3 +31,7 @@ packages:
   src:
     branch:openEuler-20.03-LTS
     version: 1.8.1-4
+- name: e2fsprogs
+  src:
+    branch:openEuler-20.03-LTS
+    version: 1.45.3-4
