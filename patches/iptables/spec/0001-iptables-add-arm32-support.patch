@@ -1,0 +1,102 @@
+From a06d5b6fe9f8e2b59f78b83f1625e9649a38206a Mon Sep 17 00:00:00 2001
+From: root <root@localhost.localdomain>
+Date: Thu, 14 Jan 2021 11:55:04 +0800
+Subject: [PATCH] iptables add arm32 support
+
+---
+ iptables.spec | 25 +++++++++++++++++++++----
+ 1 file changed, 21 insertions(+), 4 deletions(-)
+
+diff --git a/iptables.spec b/iptables.spec
+index 154257f..25c6728 100644
+--- a/iptables.spec
++++ b/iptables.spec
+@@ -2,7 +2,7 @@
+ %global legacy_actions %{_libexecdir}/initscripts/legacy-actions
+ Name:		  iptables
+ Version:	  1.8.1
+-Release:	  4
++Release:	  5
+ Summary:	  IP packet filter administration utilities
+ License:	  GPLv2 and Artistic Licence 2.0 and ISC
+ URL:		  https://www.netfilter.org/
+@@ -13,19 +13,26 @@ Source3:          iptables.service
+ Source4:          sysconfig_iptables
+ Source5:          sysconfig_ip6tables
+ 
+-Patch1:           iptables-apply-Use-mktemp-instead-of-tempfile.patch 
++Patch1:           iptables-apply-Use-mktemp-instead-of-tempfile.patch
+ 
+ BuildRequires:    bison flex gcc kernel-headers libpcap-devel libselinux-devel systemd git
+ BuildRequires:    libmnl-devel libnetfilter_conntrack-devel libnfnetlink-devel libnftnl-devel
+ 
++%ifnarch %{arm}
+ Requires:         %{name}-libs = %{version}-%{release}
++%endif
+ 
++%ifnarch %{arm}
+ Requires(post):   %{_sbindir}/update-alternatives
+ Requires(postun): %{_sbindir}/update-alternatives
+ %systemd_requires
+ 
+ Provides:         iptables-utils iptables-services
+-Obsoletes:        iptables-utils iptables-services 
++Obsoletes:        iptables-utils iptables-services
++%else
++Provides:         iptables-utils
++Obsoletes:        iptables-utils
++%endif
+ 
+ %description
+ Netfilter is a set of hooks inside the Linux kernel that allows kernel 
+@@ -76,7 +83,7 @@ rm -f include/linux/types.h
+ %make_build
+ 
+ %install
+-%make_install 
++%make_install
+ 
+ %delete_la
+ 
+@@ -141,6 +148,7 @@ popd
+ 
+ %ldconfig_scriptlets
+ 
++%ifnarch %{arm}
+ %post
+ pfx=%{_sbindir}/iptables
+ pfx6=%{_sbindir}/ip6tables
+@@ -191,6 +199,7 @@ if [ $1 -eq 0 ]; then
+ 			$cmd %{_sbindir}/$cmd-nft
+ 	done
+ fi
++%endif
+ 
+ %files
+ %defattr(-,root,root)
+@@ -208,7 +217,12 @@ fi
+ %exclude %{_sbindir}/xtables-monitor
+ %{_bindir}/iptables-xml
+ %{_libdir}/xtables/*
++%ifarch %{arm}
++%exclude %{_unitdir}/*.service
++%else
+ %{_unitdir}/*.service
++%endif
++
+ %dir %{legacy_actions}
+ %{legacy_actions}/ip*
+ %{_datadir}/xtables/pf.os
+@@ -248,6 +262,9 @@ fi
+ %{_mandir}/*
+ 
+ %changelog
++* Fri Jan 14 2021 chentt_tt <chen_tingting1@hoperun.com> - 1.8.1-5
++- add arm32 support
++
+ * Sat Jan 18 2020 openEuler Buildteam <buildteam@openeuler.org> - 1.8.1-4
+ - add executable permissions to iptables.init
+ 
+-- 
+2.19.1
+

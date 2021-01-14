@@ -27,3 +27,7 @@ packages:
   src:
     branch:openEuler-20.03-LTS
     version: 2.9.9-0
+- name: iptables
+  src:
+    branch:openEuler-20.03-LTS
+    version: 1.8.1-4
