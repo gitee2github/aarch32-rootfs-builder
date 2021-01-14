@@ -1,0 +1,74 @@
+From 282e43bcfa1195daa74f1d024850a20744626d17 Mon Sep 17 00:00:00 2001
+From: root <root@localhost.localdomain>
+Date: Thu, 14 Jan 2021 15:38:09 +0800
+Subject: [PATCH] e2fsprogs add arm32 support
+
+---
+ e2fsprogs.spec | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/e2fsprogs.spec b/e2fsprogs.spec
+index 87f135c..f847a58 100644
+--- a/e2fsprogs.spec
++++ b/e2fsprogs.spec
+@@ -1,6 +1,6 @@
+ Name:           e2fsprogs
+ Version:        1.45.3
+-Release:        4
++Release:        5
+ Summary:        Second extended file system management tools
+ License:        GPLv2 and LGPLv2 and MIT
+ URL:            http://e2fsprogs.sourceforge.net/
+@@ -12,6 +12,7 @@ Patch9000:      9000-mke2fs-check.patch
+ 
+ BuildRequires:  gcc git pkgconfig texinfo
+ BuildRequires:  fuse-devel libblkid-devel libuuid-devel
++BuildRequires:  systemd
+ 
+ Provides:       e2fsprogs-libs%{?_isa} e2fsprogs-libs
+ Obsoletes:      e2fsprogs-libs
+@@ -103,8 +104,13 @@ exit 0
+ %{_libdir}/libcom_err.so.*
+ %{_libdir}/libss.so.*
+ %{_sbindir}/*
++%ifnarch %{arm}
+ %{_udevrulesdir}/*.rules
+ %{_unitdir}/e2scrub*
++%else
++%exclude /usr/lib/udev/rules.d/*.rules
++%exclude /usr/lib/systemd/system/e2scrub*
++%endif
+ 
+ %files devel
+ %{_bindir}/compile_et
+@@ -127,7 +133,11 @@ exit 0
+ %{_mandir}/man5/*
+ %{_mandir}/man8/*
+ 
++
+ %changelog
++* Fri Jan 14 2021 chentt_tt <chen_tingting1@hoperun.com> - 1.45.3-5
++- add arm32 support
++
+ * Mon Feb 3 2020 luoshijie <luoshijie1@huawei.com> - 1.45.3-4
+ - Type:cves
+ - ID:CVE-2019-5094
+@@ -146,13 +156,13 @@ exit 0
+ - SUG:NA
+ - DESC:fix local rpmbuild error.
+ 
+-* Mon Jan 14 2020 openEuler Buildteam <buildteam@openeuler.org> - 1.45.3-1
++* Tue Jan 14 2020 openEuler Buildteam <buildteam@openeuler.org> - 1.45.3-1
+ - Type:cves
+ - ID:CVE-2019-5188
+ - SUG:restart
+ - DESC:backport patch to fix CVE-2019-5188.
+ 
+-* Mon Jan 14 2020 openEuler Buildteam <buildteam@openeuler.org> - 1.45.3-0
++* Tue Jan 14 2020 openEuler Buildteam <buildteam@openeuler.org> - 1.45.3-0
+ - Type:enhancement
+ - ID:NA
+ - SUG:NA
+-- 
+2.19.1
+
