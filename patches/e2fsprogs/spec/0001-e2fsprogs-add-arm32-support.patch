@@ -47,7 +47,7 @@ index 87f135c..f847a58 100644
  
 +
  %changelog
-+* Fri Jan 14 2021 chentt_tt <chen_tingting1@hoperun.com> - 1.45.3-5
++* Thur Jan 14 2021 chentt_tt <chen_tingting1@hoperun.com> - 1.45.3-5
 +- add arm32 support
 +
  * Mon Feb 3 2020 luoshijie <luoshijie1@huawei.com> - 1.45.3-4
