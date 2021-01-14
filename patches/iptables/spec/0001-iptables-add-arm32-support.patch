@@ -91,7 +91,7 @@ index 154257f..25c6728 100644
  %{_mandir}/*
  
  %changelog
-+* Fri Jan 14 2021 chentt_tt <chen_tingting1@hoperun.com> - 1.8.1-5
++* Thur Jan 14 2021 chentt_tt <chen_tingting1@hoperun.com> - 1.8.1-5
 +- add arm32 support
 +
  * Sat Jan 18 2020 openEuler Buildteam <buildteam@openeuler.org> - 1.8.1-4
