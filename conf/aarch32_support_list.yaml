@@ -23,3 +23,7 @@ packages:
   src:
     branch:openEuler-20.03-LTS
     version: 4.4.8-4
+- name: fuse
+  src:
+    branch:openEuler-20.03-LTS
+    version: 2.9.9-0

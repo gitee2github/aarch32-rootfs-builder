@@ -1,0 +1,50 @@
+From b2400e727a2ea034dc7908ecff05304b0ddf3e0d Mon Sep 17 00:00:00 2001
+From: root <root@localhost.localdomain>
+Date: Thu, 14 Jan 2021 14:17:26 +0800
+Subject: [PATCH] fuse add arm32 support
+
+---
+ fuse.spec | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/fuse.spec b/fuse.spec
+index f062df0..6b2c1f9 100644
+--- a/fuse.spec
++++ b/fuse.spec
+@@ -3,7 +3,7 @@
+ 
+ Name:    fuse
+ Version: %{fuse2ver}
+-Release: 0
++Release: 1
+ Summary: User space File System of fuse2
+ License: GPL+ and LGPLv2+
+ URL:     http://fuse.sf.net
+@@ -16,9 +16,13 @@ Source2: %{name}.conf
+ Patch1:        fix-compile-error-because-of-ns-colliding.patch
+ Patch2:        fix-chown-and-mknod-failed.patch
+ 
+-BuildRequires: libselinux-devel, pkgconfig, systemd-udev, meson, fdupes
++BuildRequires: libselinux-devel, pkgconfig, systemd-udev, meson, fdupes gcc-c++
+ BuildRequires: autoconf, automake, libtool, gettext-devel, ninja-build
++%ifarch %{arm}
++Requires:      /bin/which
++%else
+ Requires:      which
++%endif
+ Conflicts:     filesystem < 3
+ Provides:      fuse-common
+ Obsoletes:     fuse-common
+@@ -172,6 +176,9 @@ install -p -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}
+ 
+ 
+ %changelog
++* Tue Nov 17 2020 panda <pan_jianheng@hoperun.com> - 2.9.9-1 
++- fuse add arm32 support
++
+ * Sat Jan 11 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.9.9-0
+ - Type:enhancement
+ - ID:NA
+-- 
+2.19.1
+
