@@ -1,0 +1,60 @@
+#!/bin/bash
+option="-p 22"
+key_files="dropbear_dss_host_key dropbear_ecdsa_host_key dropbear_rsa_host_key"
+
+check_key_files()
+{
+    if [ ! -d /etc/dropbear ];then
+        mkdir /etc/dropbear > /dev/null 2>&1
+    fi
+    if [ ! -f /etc/dropbear/dropbear_dss_host_key ];then
+       dropbearkey -t dss -f /etc/dropbear/dropbear_dss_host_key > /dev/null 2>&1
+    fi
+    
+    if [ ! -f /etc/dropbear/dropbear_ecdsa_host_key ];then
+       dropbearkey -t ecdsa -f /etc/dropbear/dropbear_ecdsa_host_key > /dev/null 2>&1
+    fi
+    
+    if [ ! -f /etc/dropbear/dropbear_rsa_host_key ];then
+        dropbearkey -t rsa -s 1024 -f /etc/dropbear/dropbear_rsa_host_key > /dev/null 2>&1
+    fi
+}
+
+start()
+{
+    echo -n "Starting dropbear: "
+    check_key_files   
+    start-stop-daemon -S -b -n dropbear -a /usr/sbin/dropbear -- $option
+    echo "done"
+}
+
+stop()
+{
+    echo -n "Stopping dropbear "
+    start-stop-daemon -K -n dropbear
+    echo "done"
+}
+
+restart()
+{
+     stop
+     sleep 1
+     start
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart)
+        restart
+        ;;
+  *)
+        echo "Usage: syslog { start | stop | restart }" >&2
+        exit 1
+        ;;
+esac
+exit 0
