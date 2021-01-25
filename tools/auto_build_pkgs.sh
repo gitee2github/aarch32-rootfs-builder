@@ -13,8 +13,9 @@ mock_repo_file="/etc/mock/templates/fedora-29.tpl"
 output_dir=output
 local_repo_dir=$work_dir/$output_dir/repo
 download_prefix="https://repo.openeuler.org/openEuler-20.03-LTS/source/Packages"
-download_suffix=".oe1.src.rpm"
-oe_src_dir="oe_src_dir"
+oe_download_suffix=".oe1.src.rpm"
+download_suffix=".src.rpm"
+src_dir="src_dir"
 
 ###build function###
 build_pkg()
@@ -24,29 +25,43 @@ build_pkg()
     cat $config_file | grep -i '^- name:' | awk '{print $3}' | grep -w -i $pkg_name > /dev/null || exit $ERROR_NOT_FOUND_PKGS
 
     local pkg_version=$(cat $config_file | grep  "^- name: $pkg_name"  -A3 | grep version | awk '{print $2}')
-    local rpm_name=$pkg_name-$pkg_version$download_suffix
+    local pkg_branch=$(cat $config_file | grep  "^- name: $pkg_name"  -A3 | grep branch | awk '{print $2}')
+
     mkdir -p ./$output_dir/$pkg_name
     pushd ./$output_dir/$pkg_name
-    if [ ! -d $oe_src_dir ] ;
+    if [ ! -d $src_dir ] ;
     then
-        mkdir $oe_src_dir
+        mkdir $src_dir
     fi
 
-    ###download oe src rpm###
-    if [ ! -f $oe_src_dir/$rpm_name ];then
-        wget $download_prefix/$rpm_name -P $oe_src_dir
-    fi
+    rm -rf $src_dir/*
     
-    if [ ! -f $oe_src_dir $pkg_name.spec ];
-    then
+    ###src rpm exists###
+    if [ $pkg_branch != 'None' ]; then
+        ###download oe src rpm###
+        local rpm_name=$pkg_name-$pkg_version$oe_download_suffix
+        if [ ! -f $src_dir/$rpm_name ];then
+            wget $download_prefix/$rpm_name -P $src_dir
+        fi
+
         ###get old spec###
-        rpm2cpio $oe_src_dir/$rpm_name | cpio -idm  -D $oe_src_dir $pkg_name.spec
+        rpm2cpio $src_dir/$rpm_name | cpio -idm  -D $src_dir $pkg_name.spec
     
         ###patching spec###
-        patch -d $oe_src_dir/ < $(ls $patches_dir/$pkg_name/spec/*.patch | sort -u)
+        if [ -d $work_dir/patches/$pkg_name ]; then
+            patch -d $src_dir/ < $(ls $patches_dir/$pkg_name/spec/*.patch | sort -u)
+        fi
+    else
+        local rpm_name=$pkg_name-$pkg_version$download_suffix
+        mkdir -p /root/rpmbuild/SOURCES
+	\cp -r $work_dir/src/$pkg_name/* /root/rpmbuild/SOURCES/
+	\cp $work_dir/src/$pkg_name/$pkg_name.spec $src_dir
+        rpmbuild -bs $src_dir/$pkg_name.spec
+	\cp /root/rpmbuild/SRPMS/$rpm_name $src_dir
     fi
+
     ###starting build###
-    mock -r fedora-29-armhfp  --resultdir=. ./$oe_src_dir/$rpm_name --spec oe_src_dir/$pkg_name.spec --nocheck --macro-file=$tools_dir/rpmmacros_openeuler  --no-cleanup-after
+    mock -r fedora-29-armhfp --resultdir=. ./$src_dir/$rpm_name --spec src_dir/$pkg_name.spec --nocheck --macro-file=$tools_dir/rpmmacros_openeuler  --no-cleanup-after
     popd
 }
 
@@ -79,8 +94,6 @@ repo_sync()
     fi
 }
 
-
-
 pre_pkg_list=""
 
 if [ $1 != "glibc" ];
@@ -96,4 +109,3 @@ else
     repo_sync $pre_pkg_list
     build_pkg $1
 fi
-
