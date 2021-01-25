@@ -95,3 +95,7 @@ packages:
   src:
     branch: None
     version: 2019.78-6
+- name: p7zip
+  src:
+    branch: None
+    version: 16.02-14
