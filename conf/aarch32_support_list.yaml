@@ -91,3 +91,7 @@ packages:
   src:
     branch: None
     version: 1.0-2
+- name: dropbear
+  src:
+    branch: None
+    version: 2019.78-6
