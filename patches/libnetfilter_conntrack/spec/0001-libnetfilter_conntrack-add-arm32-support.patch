@@ -1,0 +1,40 @@
+From 3ceda19722ef3d5358050b93ad584738f3641784 Mon Sep 17 00:00:00 2001
+From: root <root@vmware.localdomain>
+Date: Thu, 21 Jan 2021 16:02:19 +0800
+Subject: [PATCH] libnetfilter_conntrack add arm32 support
+
+---
+ libnetfilter_conntrack.spec | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/libnetfilter_conntrack.spec b/libnetfilter_conntrack.spec
+index bd6db0e..e007674 100644
+--- a/libnetfilter_conntrack.spec
++++ b/libnetfilter_conntrack.spec
+@@ -1,12 +1,12 @@
+ Name:           libnetfilter_conntrack
+ Version:        1.0.6
+-Release:        7
++Release:        8
+ Summary:        A userspace library providing a API
+ License:        GPLv2+
+ URL:            http://netfilter.org
+ Source0:        http://netfilter.org/projects/libnetfilter_conntrack/files/%{name}-%{version}.tar.bz2
+ 
+-BuildRequires:  pkgconfig kernel-headers
++BuildRequires:  pkgconfig kernel-headers gcc
+ BuildRequires:  libmnl-devel >= 1.0.3 libnfnetlink-devel >= 1.0.1
+ 
+ %description
+@@ -47,5 +47,8 @@ This package contains development files.
+ %{_libdir}/*.so
+ 
+ %changelog
++* Wed Jan 20 2021 chentt_tt <chen_tingting1@hoperun.com> - 1.0.6-8
++- add arm32 support
++
+ * Mon Sep 16 2019 Yiru Wang <wangyiru1@huawei.com> - 1.0.6-7
+ - Pakcage init
+-- 
+2.19.1
+
