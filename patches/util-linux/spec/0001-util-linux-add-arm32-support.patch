@@ -1,0 +1,89 @@
+From cd05e8f2f9144bd4c72cbc05d05dc65d2d14380e Mon Sep 17 00:00:00 2001
+From: root <root@vmware.localdomain>
+Date: Wed, 20 Jan 2021 17:34:26 +0800
+Subject: [PATCH] util-linux add arm32 support
+
+---
+ util-linux.spec | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/util-linux.spec b/util-linux.spec
+index e38723e..9fe2b2d 100644
+--- a/util-linux.spec
++++ b/util-linux.spec
+@@ -2,7 +2,7 @@
+ 
+ Name:           util-linux
+ Version:        2.34
+-Release:        8
++Release:        9
+ Summary:        A random collection of Linux utilities
+ License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
+ URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
+@@ -20,10 +20,12 @@ Source9:        util-linux-runuser-l.pamd
+ BuildRequires:  audit-libs-devel >= 1.0.6 gettext-devel libselinux-devel ncurses-devel pam-devel zlib-devel popt-devel
+ BuildRequires:  libutempter-devel systemd-devel systemd libuser-devel libcap-ng-devel python-devel gcc gdb
+ 
++%ifnarch %{arm}
+ Requires(post): coreutils
++%endif
+ Requires:       pam >= 1.1.3-7, /etc/pam.d/system-auth audit-libs >= 1.0.6
+ Requires:       libblkid = %{version}-%{release} libmount = %{version}-%{release} libsmartcols = %{version}-%{release}
+-Requires:       libfdisk = %{version}-%{release} libuuid = %{version}-%{release} 
++Requires:       libfdisk = %{version}-%{release} libuuid = %{version}-%{release}
+ 
+ Conflicts:      initscripts < 9.79-4 bash-completion < 1:2.1-1 coreutils < 8.20 sysvinit-tools < 2.88-14
+ Conflicts:      e2fsprogs < 1.41.8-5 filesystem < 3
+@@ -74,7 +76,9 @@ Summary: Library for block device id.
+ License: LGPLv2+
+ Requires: libuuid = %{version}-%{release}
+ Conflicts: filesystem < 3
++%ifnarch %{arm}
+ Requires(post): coreutils
++%endif
+ 
+ %description -n libblkid
+ This package is le library for block device id.
+@@ -83,10 +87,12 @@ This package is le library for block device id.
+ Summary:  UUID generation daemon
+ Requires: libuuid = %{version}-%{release}
+ License: GPLv2
++%ifnarch %{arm}
+ Requires: systemd
+-Requires(pre): shadow
+ Requires(post): systemd-units
+ Requires(preun): systemd-units
++%endif
++Requires(pre): shadow
+ 
+ %description -n uuidd
+ The uuidd daemon is used by the UUID library to generate universally
+@@ -263,6 +269,7 @@ done
+ %post -n libfdisk -p /sbin/ldconfig
+ %postun -n libfdisk -p /sbin/ldconfig
+ 
++%ifnarch %{arm}
+ %post -n uuidd
+ %systemd_post uuidd
+ if [ $1 -eq 1 ]
+@@ -276,6 +283,7 @@ fi
+ %postun -n uuidd
+ /sbin/ldconfig
+ %systemd_postun_with_restart uuidd
++%endif
+ 
+ %files -f %{name}.files
+ %exclude %{compldir}/{mount,umount}
+@@ -383,6 +391,9 @@ fi
+ %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
+ 
+ %changelog
++* Wed Jan 20 2021 chentt_tt <chen_tingting1@hoperun.com> - 2.34-9
++- add arm32 support
++
+ * Sun Mar 22 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.34-8
+ - Type:enhancement
+ - ID:NA
+-- 
+2.19.1
+
