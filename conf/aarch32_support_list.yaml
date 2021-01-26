@@ -103,3 +103,7 @@ packages:
   src:
     branch: None
     version: 1.0-1
+- name: util-linux
+  src:
+    branch: openEuler-20.03-LTS
+    version: 2.34-8
