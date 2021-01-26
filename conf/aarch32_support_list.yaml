@@ -99,3 +99,7 @@ packages:
   src:
     branch: None
     version: 16.02-14
+- name: t3-setup
+  src:
+    branch: None
+    version: 1.0-1
