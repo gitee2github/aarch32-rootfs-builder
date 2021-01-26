@@ -107,3 +107,7 @@ packages:
   src:
     branch: openEuler-20.03-LTS
     version: 2.34-8
+- name: libnetfilter_conntrack
+  src:
+    branch: openEuler-20.03-LTS
+    version: 1.0.6-7
