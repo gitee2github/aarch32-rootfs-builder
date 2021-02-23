@@ -24,8 +24,8 @@ build_pkg()
     local pkg_name=$1
     cat $config_file | grep -i '^- name:' | awk '{print $3}' | grep -w -i $pkg_name > /dev/null || exit $ERROR_NOT_FOUND_PKGS
 
-    local pkg_version=$(cat $config_file | grep  "^- name: $pkg_name"  -A3 | grep version | awk '{print $2}')
-    local pkg_branch=$(cat $config_file | grep  "^- name: $pkg_name"  -A3 | grep branch | awk '{print $2}')
+    local pkg_version=$(cat $config_file | grep  "^- name: $pkg_name$"  -A3 | grep version | awk '{print $2}')
+    local pkg_branch=$(cat $config_file | grep  "^- name: $pkg_name$"  -A3 | grep branch | awk '{print $2}')
 
     mkdir -p ./$output_dir/$pkg_name
     pushd ./$output_dir/$pkg_name
@@ -51,13 +51,21 @@ build_pkg()
         if [ -d $work_dir/patches/$pkg_name ]; then
             patch -d $src_dir/ < $(ls $patches_dir/$pkg_name/spec/*.patch | sort -u)
         fi
+
+        if [ $pkg_name == 'busybox' ]; then
+            mkdir -p /root/rpmbuild/SOURCES
+            rpm2cpio $src_dir/$rpm_name | cpio -idv -D /root/rpmbuild/SOURCES
+            cp -f $src_dir/* /root/rpmbuild/SOURCES
+            busybox_src_pkg=$(rpmbuild -bs $src_dir/$pkg_name.spec | awk '{print $2}')
+            cp -f $busybox_src_pkg ./$src_dir/$rpm_name
+        fi
     else
         local rpm_name=$pkg_name-$pkg_version$download_suffix
         mkdir -p /root/rpmbuild/SOURCES
-	\cp -r $work_dir/src/$pkg_name/* /root/rpmbuild/SOURCES/
-	\cp $work_dir/src/$pkg_name/$pkg_name.spec $src_dir
+        cp -fr $work_dir/src/$pkg_name/* /root/rpmbuild/SOURCES/
+        cp -f $work_dir/src/$pkg_name/$pkg_name.spec $src_dir
         rpmbuild -bs $src_dir/$pkg_name.spec
-	\cp /root/rpmbuild/SRPMS/$rpm_name $src_dir
+        cp -f /root/rpmbuild/SRPMS/$rpm_name $src_dir
     fi
 
     ###starting build###
