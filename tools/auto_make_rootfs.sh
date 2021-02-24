@@ -119,7 +119,7 @@ please check if all pkgs have been build succ, and then remove this file."
     mkdir -p $rootfs_dir/../arm32_repo
 
     ###create arm32_repo
-    find ${work_dir}/output | grep rpm$ | grep -v src | xargs -i cp -f {} $rootfs_dir/../arm32_repo
+    find ${work_dir}/output | grep rpm$ | grep -v src | xargs -i /usr/bin/cp {} $rootfs_dir/../arm32_repo
     createrepo $rootfs_dir/../arm32_repo
     cat << EOF > /etc/yum.repos.d/arm32_rootfs.repo
 [arm32_rootfs]

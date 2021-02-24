@@ -55,17 +55,17 @@ build_pkg()
         if [ $pkg_name == 'busybox' ]; then
             mkdir -p /root/rpmbuild/SOURCES
             rpm2cpio $src_dir/$rpm_name | cpio -idv -D /root/rpmbuild/SOURCES
-            cp -f $src_dir/* /root/rpmbuild/SOURCES
+            /usr/bin/cp $src_dir/* /root/rpmbuild/SOURCES
             busybox_src_pkg=$(rpmbuild -bs $src_dir/$pkg_name.spec | awk '{print $2}')
-            cp -f $busybox_src_pkg ./$src_dir/$rpm_name
+            /usr/bin/cp $busybox_src_pkg ./$src_dir/$rpm_name
         fi
     else
         local rpm_name=$pkg_name-$pkg_version$download_suffix
         mkdir -p /root/rpmbuild/SOURCES
-        cp -fr $work_dir/src/$pkg_name/* /root/rpmbuild/SOURCES/
-        cp -f $work_dir/src/$pkg_name/$pkg_name.spec $src_dir
+        /usr/bin/cp -r $work_dir/src/$pkg_name/* /root/rpmbuild/SOURCES/
+        /usr/bin/cp $work_dir/src/$pkg_name/$pkg_name.spec $src_dir
         rpmbuild -bs $src_dir/$pkg_name.spec
-        cp -f /root/rpmbuild/SRPMS/$rpm_name $src_dir
+        /usr/bin/cp /root/rpmbuild/SRPMS/$rpm_name $src_dir
     fi
 
     ###starting build###
