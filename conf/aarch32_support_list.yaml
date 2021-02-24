@@ -127,3 +127,7 @@ packages:
   src:
     branch: openEuler-20.03-LTS
     version: 1.3.1-8
+- name: gcc
+  src:
+    branch: openEuler-20.03-LTS
+    version: 7.3.0-20190804.h30
