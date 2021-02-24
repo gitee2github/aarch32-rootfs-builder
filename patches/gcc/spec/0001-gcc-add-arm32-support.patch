@@ -1,0 +1,81 @@
+From b437d3a951c0c454c3e7a0eb7d1358f81fa220cd Mon Sep 17 00:00:00 2001
+From: root <root@localhost.localdomain>
+Date: Mon, 22 Feb 2021 18:35:26 +0800
+Subject: [PATCH] gcc add arm32 support
+
+---
+ gcc.spec | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
+
+diff --git a/gcc.spec b/gcc.spec
+index f8796b4..4aee623 100644
+--- a/gcc.spec
++++ b/gcc.spec
+@@ -12,11 +12,14 @@
+ %undefine _annotated_build
+ 
+ %global gcc_target_platform %{_arch}-linux-gnu
++%ifarch %{arm}
++%global gcc_target_platform %{_target_platform}
++%endif
+ 
+ %global build_ada 0
+ %global build_java 0
+ %global build_go 0
+-%ifarch aarch64
++%ifarch aarch64 armv7hl
+ %global build_libquadmath 0
+ %endif
+ %ifarch x86_64
+@@ -29,14 +32,18 @@
+ %global build_cloog 1
+ %global build_libstdcxx_docs 0
+ %global build_java_tar 0
++%ifarch armv7hl
++%global build_libtsan 0
++%else
+ %global build_libtsan 1
++%endif
+ %global build_libilp32 0
+ %global build_check 0
+ 
+ Summary: Various compilers (C, C++, Objective-C, Java, ...)
+ Name: gcc
+ Version: 7.3.0
+-Release: %{gcc_release}.h30
++Release: %{gcc_release}.h31
+ License: GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD
+ Group: Development/Languages
+ #Source0: hcc-aarch64-linux-release.tar.bz2
+@@ -705,7 +712,7 @@ enablelada=,ada
+ %if %{build_go}
+ enablelgo=,go
+ %endif
+-OPT_FLAGS="$OPT_FLAGS -fPIE -Wl,-z,relro,-z,now"
++OPT_FLAGS="$OPT_FLAGS -fPIE -Wl,-z,relro,-z,now -mfloat-abi=hard"
+ OPT_LDFLAGS="$OPT_LDFLAGS -Wl,-z,relro,-z,now"
+ export extra_ldflags_libobjc="-Wl,-z,relro,-z,now"
+ export FCFLAGS="$OPT_FLAGS"
+@@ -725,6 +732,9 @@ CC="$CC" CFLAGS="$OPT_FLAGS" \
+          --enable-gnu-indirect-function --build=%{gcc_target_platform} \
+          --with-stage1-ldflags="$OPT_LDFLAGS" \
+          --with-boot-ldflags="$OPT_LDFLAGS" \
++%ifarch armv7hl
++         --with-float=hard --with-fpu=vfpv3-d16 --with-abi=aapcs-linux
++%endif
+ %ifarch x86_64
+         --with-tune=generic \
+         --with-arch_32=x86-64 \
+@@ -3142,6 +3152,9 @@ fi
+ 
+ 
+ %changelog
++* Mon Feb 22 2021 chentt_tt <chen_tingting1@hopefun.com> - 7.3.0-20190804.h31
++- add arm32 compilation support
++
+ * Tue Dec 31 2019 openEuler Buildteam <buildteam@openeuler.org> - 7.3.0-20190804.h30
+ - Type:NA
+ - ID:NA
+-- 
+2.20.1
+
