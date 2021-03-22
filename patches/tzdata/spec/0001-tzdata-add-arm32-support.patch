@@ -1,0 +1,44 @@
+From 3f77873b444227a190ee041e598ba2a90ed854cc Mon Sep 17 00:00:00 2001
+From: root <root@localhost.localdomain>
+Date: Mon, 22 Mar 2021 11:35:03 +0800
+Subject: [PATCH] tzdata-add-arm32-support
+
+---
+ tzdata.spec | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/tzdata.spec b/tzdata.spec
+index ecf7e5e..e6bcbeb 100644
+--- a/tzdata.spec
++++ b/tzdata.spec
+@@ -1,6 +1,6 @@
+ Name:		tzdata
+ Version:	2019b
+-Release:	10
++Release:	11
+ Summary:	Timezone data
+ License:	Public Domain
+ URL:		https://www.iana.org/time-zones
+@@ -21,7 +21,9 @@ Patch9005:	remove-Israel-timezone.patch
+ BuildRequires:	gawk glibc perl-interpreter
+ BuildRequires:	java-devel
+ BuildRequires:	glibc-common >= 2.5.90-7
++%ifnarch %{arm}
+ BuildArchitectures: noarch
++%endif
+ 
+ %description
+ This package contains data files with rules for various timezones around
+@@ -118,6 +120,9 @@ install -p -m 644 tzdb.dat $RPM_BUILD_ROOT%{_datadir}/javazi-1.8/
+ %{_datadir}/javazi-1.8
+ 
+ %changelog
++* Mon Mar 22 2021 chentt_tt <chen_tingting1@hoperun.com> - 2019b-11
++- add arm32 support
++
+ * Mon Mar 23 2020 liuchao<liuchao173@huawei.com> - 2019b-10
+ - Type:recommended
+ - ID:NA
+-- 
+2.27.0
+

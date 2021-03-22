@@ -1,17 +1,17 @@
-From 9438fcc55c18c3388b7fc7911bb580aac0174112 Mon Sep 17 00:00:00 2001
+From 906add35c4e4391095c6a9ea341f206ef9ae2fc7 Mon Sep 17 00:00:00 2001
 From: root <root@localhost.localdomain>
-Date: Tue, 17 Nov 2020 21:40:00 -0500
-Subject: [PATCH] support for arm32 compilation on mock
+Date: Mon, 22 Mar 2021 10:55:05 +0800
+Subject: [PATCH] support-for-arm32-compilation-on-mock
 
 ---
- gcc_secure.spec | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
+ gcc_secure.spec | 25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
 diff --git a/gcc_secure.spec b/gcc_secure.spec
-index a623aa4..4dc69da 100644
+index a623aa4..cf524dd 100644
 --- a/gcc_secure.spec
 +++ b/gcc_secure.spec
-@@ -1,3 +1,9 @@
+@@ -1,9 +1,15 @@
 +%if 0%{?mock_build}
 +%global install_dir /var/tmp
 +%else
@@ -21,6 +21,13 @@ index a623aa4..4dc69da 100644
  Name:           gcc_secure
  Summary:        Build with gcov
  License:        GPL
+ Group:          System/Management
+ Version:        1.0
+-Release:        0.6
++Release:        0.7
+ BuildRoot:      %{_tmppath}/%{name}-%{version}
+ #Source:         %{name}-%{version}.tar.bz2
+ 
 @@ -29,11 +35,11 @@ mkdir -p %{buildroot}/opt/needgcov
  %pre
  
@@ -77,5 +84,5 @@ index a623aa4..4dc69da 100644
  - Type:enhancement
  - ID:NA
 -- 
-2.20.1
+2.27.0
 

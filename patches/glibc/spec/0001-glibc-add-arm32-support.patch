@@ -1,14 +1,14 @@
-From 10b8cca9eb1dbb394bd89846748d0954e89bdd6e Mon Sep 17 00:00:00 2001
+From b4c94f921c9266e086d1ce9e7760eda7daa4968d Mon Sep 17 00:00:00 2001
 From: root <root@localhost.localdomain>
-Date: Mon, 22 Feb 2021 02:33:16 -0500
+Date: Mon, 22 Mar 2021 10:27:48 +0800
 Subject: [PATCH] glibc-add-arm32-support
 
 ---
- glibc.spec | 20 +++++++++++++++-----
- 1 file changed, 15 insertions(+), 5 deletions(-)
+ glibc.spec | 25 ++++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
 
 diff --git a/glibc.spec b/glibc.spec
-index 1dc2725..372ffa6 100644
+index 1dc2725..05ada9e 100644
 --- a/glibc.spec
 +++ b/glibc.spec
 @@ -59,7 +59,7 @@
@@ -20,19 +20,18 @@ index 1dc2725..372ffa6 100644
  Summary: 	The GNU libc libraries
  License:	%{all_license}
  URL: 		http://www.gnu.org/software/glibc/
-@@ -110,7 +110,11 @@ BuildRequires: gcc-c++ libstdc++-static glibc-devel libidn2
+@@ -110,7 +110,10 @@ BuildRequires: gcc-c++ libstdc++-static glibc-devel libidn2
  
  Requires: glibc-common = %{version}-%{release}
  Requires: glibc-langpack = %{version}-%{release}
-+%ifarch armv7hl
-+Requires(pre): base-files
-+%else
++
++%ifnarch %{arm}
  Requires(pre): basesystem
 +%endif
  
  %description
  The GNU C Library project provides the core libraries for the GNU system and
-@@ -528,7 +532,7 @@ pushd build-%{target}
+@@ -528,7 +531,7 @@ pushd build-%{target}
      -I. -DDATADIR=\"%{_datadir}\" -DPREFIX=\"%{_prefix}\" \
      -L../build-%{target} \
      -B../build-%{target}/csu/ -lc -lc_nonshared \
@@ -41,7 +40,7 @@ index 1dc2725..372ffa6 100644
      -Wl,-rpath-link=.:./math:./elf:./dlfcn:./nss:./rt:./resolv:./mathvec:./support:./nptl libc.so.6 libc_nonshared.a \
      -Wl,--as-needed $olddir/build-%{target}/elf/ld.so
  install -m 700 build-locale-archive $RPM_BUILD_ROOT%{_prefix}/sbin/build-locale-archive
-@@ -735,8 +739,8 @@ fi
+@@ -735,8 +738,8 @@ fi
  %verify(not md5 size mtime) %config(noreplace) /etc/nsswitch.conf
  %verify(not md5 size mtime) %config(noreplace) /etc/ld.so.conf
  %verify(not md5 size mtime) %config(noreplace) /etc/rpc
@@ -52,7 +51,22 @@ index 1dc2725..372ffa6 100644
  %dir /etc/ld.so.conf.d
  %dir %{_prefix}/libexec/getconf
  %{_prefix}/libexec/getconf/*
-@@ -902,7 +906,7 @@ fi
+@@ -765,8 +768,14 @@ fi
+ %dir %{_prefix}/share/i18n
+ %dir %{_prefix}/share/i18n/charmaps
+ %dir %{_prefix}/share/i18n/locales
++%ifarch %{arm}
++%exclude %attr(0644,root,root) %verify(not md5 size mtime) %{_prefix}/lib/locale/locale-archive.tmpl
++%exclude %attr(0644,root,root) %verify(not md5 size mtime mode) %ghost %config(missingok,noreplace) %{_prefix}/lib/locale/locale-archive
++%else
+ %attr(0644,root,root) %verify(not md5 size mtime) %{_prefix}/lib/locale/locale-archive.tmpl
+ %attr(0644,root,root) %verify(not md5 size mtime mode) %ghost %config(missingok,noreplace) %{_prefix}/lib/locale/locale-archive
++%endif
++
+ %{_prefix}/lib/locale/C.utf8
+ %{_prefix}/lib/locale/zh_CN.utf8
+ %{_prefix}/lib/locale/en_US.utf8
+@@ -902,7 +911,7 @@ fi
  %{_prefix}/bin/pcprofiledump
  %{_prefix}/bin/xtrace
  %{_prefix}/lib/debug/usr/bin/*.debug
@@ -61,12 +75,12 @@ index 1dc2725..372ffa6 100644
  
  
  %files help
-@@ -918,6 +922,12 @@ fi
+@@ -918,6 +927,12 @@ fi
  
  
  %changelog
 +* Mon Feb 22 2021 chentt_tt <chen_tingting1@hopefun.com> -2.28-38
-+- modify the dependent package basesystem to base-files
++- ifnoarch %{arm} dosen't depend on package basesystem
 +
 +* Thu Nov 17 2020 js_liangdong<liang_dong@hoperun.com> - 2.28-37
 +- add arm32 compilation support
@@ -75,5 +89,5 @@ index 1dc2725..372ffa6 100644
  - fix build src.rpm error
  
 -- 
-2.20.1
+2.27.0
 
