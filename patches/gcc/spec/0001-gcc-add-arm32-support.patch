@@ -1,14 +1,14 @@
-From b437d3a951c0c454c3e7a0eb7d1358f81fa220cd Mon Sep 17 00:00:00 2001
+From cf336cff38c7c84bd10e59283613c11f71e08dde Mon Sep 17 00:00:00 2001
 From: root <root@localhost.localdomain>
-Date: Mon, 22 Feb 2021 18:35:26 +0800
+Date: Mon, 8 Mar 2021 16:23:42 +0800
 Subject: [PATCH] gcc add arm32 support
 
 ---
- gcc.spec | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
+ gcc.spec | 24 ++++++++++++++++++++++--
+ 1 file changed, 22 insertions(+), 2 deletions(-)
 
 diff --git a/gcc.spec b/gcc.spec
-index f8796b4..4aee623 100644
+index f8796b4..f6348d4 100644
 --- a/gcc.spec
 +++ b/gcc.spec
 @@ -12,11 +12,14 @@
@@ -43,20 +43,23 @@ index f8796b4..4aee623 100644
  Name: gcc
  Version: 7.3.0
 -Release: %{gcc_release}.h30
-+Release: %{gcc_release}.h31
++Release: %{gcc_release}.h32
  License: GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD
  Group: Development/Languages
  #Source0: hcc-aarch64-linux-release.tar.bz2
-@@ -705,7 +712,7 @@ enablelada=,ada
+@@ -705,7 +712,11 @@ enablelada=,ada
  %if %{build_go}
  enablelgo=,go
  %endif
--OPT_FLAGS="$OPT_FLAGS -fPIE -Wl,-z,relro,-z,now"
++%ifarch armv7hl
 +OPT_FLAGS="$OPT_FLAGS -fPIE -Wl,-z,relro,-z,now -mfloat-abi=hard"
++%else
+ OPT_FLAGS="$OPT_FLAGS -fPIE -Wl,-z,relro,-z,now"
++%endif
  OPT_LDFLAGS="$OPT_LDFLAGS -Wl,-z,relro,-z,now"
  export extra_ldflags_libobjc="-Wl,-z,relro,-z,now"
  export FCFLAGS="$OPT_FLAGS"
-@@ -725,6 +732,9 @@ CC="$CC" CFLAGS="$OPT_FLAGS" \
+@@ -725,6 +736,9 @@ CC="$CC" CFLAGS="$OPT_FLAGS" \
           --enable-gnu-indirect-function --build=%{gcc_target_platform} \
           --with-stage1-ldflags="$OPT_LDFLAGS" \
           --with-boot-ldflags="$OPT_LDFLAGS" \
@@ -66,10 +69,13 @@ index f8796b4..4aee623 100644
  %ifarch x86_64
          --with-tune=generic \
          --with-arch_32=x86-64 \
-@@ -3142,6 +3152,9 @@ fi
+@@ -3142,6 +3156,12 @@ fi
  
  
  %changelog
++* Mon Mar 8 2021 chentt_tt <chen_tingting1@hopefun.com> - 7.3.0-20190804.h32
++- gcc flag mfloat-abi needs to distinguish between x86 and arm
++
 +* Mon Feb 22 2021 chentt_tt <chen_tingting1@hopefun.com> - 7.3.0-20190804.h31
 +- add arm32 compilation support
 +
@@ -77,5 +83,5 @@ index f8796b4..4aee623 100644
  - Type:NA
  - ID:NA
 -- 
-2.20.1
+2.27.0
 
